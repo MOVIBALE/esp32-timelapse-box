@@ -84,6 +84,16 @@ test("ESP32-S3 timelapse firmware uses an app partition large enough for Wi-Fi p
   assert.doesNotMatch(partitions, /factory\s*,\s*app\s*,\s*factory\s*,\s*0x10000\s*,\s*0x100000/);
 });
 
+test("ESP32-S3 firmware pins the verified ESP-IDF build platform", () => {
+  const config = readFileSync(firmwareConfigPath, "utf-8");
+
+  assert.match(
+    config,
+    /platform\s*=\s*https:\/\/github\.com\/pioarduino\/platform-espressif32\/releases\/download\/55\.03\.38\/platform-espressif32\.zip/
+  );
+  assert.doesNotMatch(config, /^platform\s*=\s*espressif32\s*$/m);
+});
+
 test("ESP32-S3 timelapse firmware releases unused Classic BT memory before Wi-Fi starts", () => {
   const main = readFileSync(firmwareMainPath, "utf-8");
   const appMain = main.slice(main.indexOf("void app_main(void)"));
