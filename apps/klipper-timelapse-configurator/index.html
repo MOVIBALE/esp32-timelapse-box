@@ -1,0 +1,252 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ESP32 Timelapse Box Configurator</title>
+    <link rel="stylesheet" href="./src/styles/workbench.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">ESP32 TIMELAPSE BOX / KLIPPER / WEB SERIAL</p>
+          <h1 data-i18n="appTitle">ESP32 延时摄影盒子配置器</h1>
+        </div>
+        <div class="status-strip">
+          <label class="language-picker">
+            <span data-i18n="languageLabel">语言</span>
+            <select id="languageSelect">
+              <option value="zh-CN" selected>中文</option>
+              <option value="en">English</option>
+            </select>
+          </label>
+          <span id="browserStatus" class="status" data-tone="idle" data-i18n="browserChecking">浏览器检测中</span>
+          <span id="boardStatus" class="status" data-tone="idle" data-i18n="boardDisconnected">板子未连接</span>
+          <span id="safetyStatus" class="status" data-tone="disabled" data-i18n="safetyModeDisabled">已禁用</span>
+        </div>
+      </header>
+
+      <section class="workspace">
+        <aside class="rail">
+          <h2 data-i18n="chainTitle">连接链路</h2>
+          <ol class="chain">
+            <li data-state="active"><span>1</span><b data-i18n="chainBrowser">Chrome / Edge</b></li>
+            <li><span>2</span><b data-i18n="chainPort">ESP32 串口</b></li>
+            <li><span>3</span><b data-i18n="chainListener">板载监听器</b></li>
+            <li><span>4</span><b data-i18n="chainMoonraker">Moonraker 层变化</b></li>
+            <li><span>5</span><b data-i18n="chainShutter">快门触发</b></li>
+          </ol>
+
+          <div class="readout">
+            <p class="label" data-i18n="recentLayer">最近层变化</p>
+            <strong id="lastLayer">-</strong>
+          </div>
+          <div class="readout">
+            <p class="label" data-i18n="totalLayer">总层数</p>
+            <strong id="totalLayer">-</strong>
+          </div>
+          <div class="readout">
+            <p class="label" data-i18n="currentFile">当前文件</p>
+            <strong id="currentFile">-</strong>
+          </div>
+          <div class="readout">
+            <p class="label" data-i18n="lastEventAt">最后事件</p>
+            <strong id="lastEventAt">-</strong>
+          </div>
+          <div class="readout">
+            <p class="label" data-i18n="dryRunEventsLabel">Dry-run 事件</p>
+            <strong id="dryRunEvents">0</strong>
+          </div>
+          <div class="readout">
+            <p class="label" data-i18n="serialPort">串口</p>
+            <strong id="portInfo" data-i18n="portNotSelected">尚未选择</strong>
+          </div>
+          <div class="readout">
+            <p class="label" data-i18n="moonrakerProbe">Moonraker</p>
+            <strong id="moonrakerStatus" data-i18n="moonrakerUntested">未测试</strong>
+          </div>
+          <div class="readout" data-route-panel="s3">
+            <p class="label" data-i18n="sonyCameraStatus">Sony 相机</p>
+            <strong id="sonyStatus" data-i18n="sonyUnknown">等待读取</strong>
+          </div>
+          <div class="readout" data-route-panel="s3">
+            <p class="label" data-i18n="macroSourceLabel">Klipper 宏</p>
+            <strong id="macroSource" data-i18n="macroSourceUnknown">等待读取</strong>
+          </div>
+        </aside>
+
+        <section class="workbench">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow" data-i18n="setupEyebrow">设置</p>
+              <h2 data-i18n="setupTitle">连接、配置、上传、观察</h2>
+            </div>
+            <div class="mode-tabs" aria-label="Safety modes">
+              <span data-mode="disabled" data-i18n="modeDisabled">禁用 Disabled</span>
+              <span data-mode="dry-run" data-i18n="modeDryRun">安全 Dry-run</span>
+              <span data-mode="armed" data-i18n="modeArmed">正式 Armed</span>
+            </div>
+          </div>
+
+          <div class="step-cue">
+            <span data-i18n="currentStepLabel">当前步骤</span>
+            <strong id="tutorialStepCue" data-i18n="tutorialChecklistSummary">等待连接</strong>
+          </div>
+
+          <section class="hardware-route" aria-labelledby="hardwareRouteTitle">
+            <div class="route-heading">
+              <span class="route-kicker" data-i18n="hardwareRouteKicker">硬件路线</span>
+              <strong id="hardwareRouteTitle" data-i18n="hardwareRouteTitle">选择已刷入固件的 ESP32</strong>
+            </div>
+            <div id="hardwareRouteSelector" class="route-segment" role="group" aria-labelledby="hardwareRouteTitle">
+              <button type="button" data-route="esp32-s3-sony-ble" data-i18n="routeS3Label" aria-pressed="true">ESP32-S3 + Sony BLE</button>
+              <button type="button" data-route="esp32-c3-compatible" data-i18n="routeC3Label" aria-pressed="false">兼容型 ESP32-C3 快门盒</button>
+            </div>
+            <p id="hardwareRouteDescription" data-i18n="routeS3Description">通过串口配置网络、连接 Sony 相机并控制 dry-run/armed。</p>
+          </section>
+
+          <div class="actions">
+            <button id="connectButton" class="primary" type="button" data-i18n="connectBoard">连接板子</button>
+            <button id="provisionS3Button" type="button" disabled data-route-action="s3" data-i18n="provisionS3">配置网络并保持 dry-run</button>
+            <button id="pairSonyButton" type="button" disabled data-route-action="s3" data-i18n="pairSony">首次配对 Sony</button>
+            <button id="connectSonyButton" type="button" disabled data-route-action="s3" data-i18n="connectSony">连接已配对 Sony</button>
+            <button id="s3StatusButton" type="button" disabled data-route-action="s3" data-i18n="readS3Status">读取盒子状态</button>
+            <button id="disarmS3Button" type="button" disabled data-route-action="s3" data-i18n="disarmS3">锁定为 dry-run</button>
+            <button id="uploadSafeButton" type="button" disabled data-route-action="c3" data-i18n="uploadSafe">上传 disabled / dry-run</button>
+            <button id="enableDryRunButton" type="button" disabled data-route-action="c3" data-i18n="enableDryRun">启用 dry-run 监听</button>
+            <button id="softResetButton" type="button" disabled data-route-action="c3" data-i18n="softResetObserve">软重启观察</button>
+            <button id="recoverButton" class="danger" type="button" disabled data-route-action="c3" data-i18n="recoverMain">删除 main.py 恢复</button>
+            <button id="disconnectButton" type="button" disabled data-i18n="disconnect">断开串口</button>
+          </div>
+
+          <section class="tutorial-checklist" aria-labelledby="tutorialChecklistTitle">
+            <div class="section-head compact-head">
+              <div>
+                <p class="eyebrow" data-i18n="tutorialEyebrow">教程检查</p>
+                <h3 id="tutorialChecklistTitle" data-i18n="tutorialChecklistTitle">录教程时看这里</h3>
+              </div>
+              <span class="checklist-summary" id="tutorialChecklistSummary" data-i18n="tutorialChecklistSummary">等待连接</span>
+            </div>
+            <ol id="tutorialChecklist">
+              <li class="checklist-row" data-checkpoint="connect" data-state="current">
+                <span class="checklist-dot">1</span>
+                <span data-checkpoint-title data-i18n="tutorialConnect">连接板子</span>
+                <strong data-checkpoint-status data-i18n="checkCurrent">当前</strong>
+                <small data-checkpoint-detail></small>
+              </li>
+              <li class="checklist-row" data-checkpoint="safe-upload" data-state="locked">
+                <span class="checklist-dot">2</span>
+                <span data-checkpoint-title data-i18n="tutorialSafeUpload">上传安全监听器</span>
+                <strong data-checkpoint-status data-i18n="checkLocked">未到</strong>
+                <small data-checkpoint-detail></small>
+              </li>
+              <li class="checklist-row" data-checkpoint="dry-run" data-state="locked">
+                <span class="checklist-dot">3</span>
+                <span data-checkpoint-title data-i18n="tutorialDryRun">启用 dry-run</span>
+                <strong data-checkpoint-status data-i18n="checkLocked">未到</strong>
+                <small data-checkpoint-detail></small>
+              </li>
+              <li class="checklist-row" data-checkpoint="layer-seen" data-state="locked">
+                <span class="checklist-dot">4</span>
+                <span data-checkpoint-title data-i18n="tutorialLayerSeen">确认真实层变化</span>
+                <strong data-checkpoint-status data-i18n="checkLocked">未到</strong>
+                <small data-checkpoint-detail></small>
+              </li>
+              <li class="checklist-row" data-checkpoint="recover" data-state="locked">
+                <span class="checklist-dot">5</span>
+                <span data-checkpoint-title data-i18n="tutorialRecover">恢复官方状态</span>
+                <strong data-checkpoint-status data-i18n="checkLocked">未到</strong>
+                <small data-checkpoint-detail></small>
+              </li>
+            </ol>
+          </section>
+
+          <form class="settings" id="settingsForm">
+            <label>
+              <span data-i18n="baudRate">串口波特率</span>
+              <select id="baudSelect">
+                <option value="115200" selected>115200</option>
+                <option value="921600">921600</option>
+              </select>
+            </label>
+            <label>
+              <span data-i18n="wifiSsid">Wi-Fi SSID</span>
+              <input id="ssidInput" placeholder="Wi-Fi SSID" autocomplete="off" />
+            </label>
+            <label>
+              <span data-i18n="wifiPassword">Wi-Fi 密码</span>
+              <input id="passwordInput" type="password" autocomplete="off" />
+            </label>
+            <label>
+              <span data-i18n="moonrakerHost">Moonraker 地址</span>
+              <input id="hostInput" value="printer.local" autocomplete="off" />
+            </label>
+            <label>
+              <span data-i18n="moonrakerPreflight">Moonraker 预检</span>
+              <button id="testMoonrakerButton" type="button" data-i18n="testMoonraker">测试 Moonraker</button>
+            </label>
+            <label id="backendModeField" data-route-panel="c3">
+              <span data-i18n="backendMode">监听方式</span>
+              <select id="modeSelect">
+                <option value="http_poll" selected data-i18n="backendHttpPolling">HTTP 轮询</option>
+                <option value="websocket_agent" data-i18n="backendWebsocketAgent">WebSocket 代理</option>
+                <option value="auto" data-i18n="backendAuto">自动</option>
+              </select>
+            </label>
+          </form>
+
+          <div class="recovery-strip" data-route-panel="c3">
+            <span data-i18n="recoveryStatusLabel">恢复状态</span>
+            <strong id="recoveryStatus" data-i18n="recoveryNotRun">未执行</strong>
+          </div>
+
+          <details class="advanced" data-route-panel="c3">
+            <summary data-i18n="advancedDebug">高级调试</summary>
+            <p class="advanced-copy" data-i18n="advancedDebugCopy">普通教程不用打开这里。raw REPL 和临时文件探针只用于排查串口或板载文件系统问题。</p>
+            <div class="actions compact">
+              <button id="rawEnterButton" type="button" disabled data-i18n="enterRaw">进入 raw REPL</button>
+              <button id="rawExitButton" type="button" disabled data-i18n="exitRaw">退出 raw REPL</button>
+              <button id="probeButton" type="button" disabled data-i18n="writeProbe">写读临时文件</button>
+              <button id="removeProbeButton" type="button" disabled data-i18n="removeProbe">删除临时文件</button>
+            </div>
+          </details>
+
+          <section class="armed-panel">
+            <div>
+              <p class="eyebrow" data-i18n="armedEyebrow">正式触发闸门</p>
+              <h3 data-i18n="armedTitle">正式触发需要二次确认</h3>
+              <p data-i18n="armedCopy">只有在 dry-run 已确认真实层变化、相机/手机已准备好时才允许继续。</p>
+            </div>
+            <label>
+              <span data-i18n="armedPhraseLabel">输入确认短语</span>
+              <input id="armedPhraseInput" placeholder="ARM DRY-RUN VERIFIED" autocomplete="off" />
+            </label>
+            <button id="armButton" class="armed" type="button" disabled data-i18n="armConfig">写入 armed 配置</button>
+          </section>
+        </section>
+
+        <aside class="logs">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow" data-i18n="logsEyebrow">日志</p>
+              <h2 data-i18n="logsTitle">小白解释 / 原始日志</h2>
+            </div>
+            <div class="log-actions">
+              <button id="copyReportButton" type="button" data-i18n="copyReport">复制报告</button>
+              <button id="copyLogButton" type="button" data-i18n="copy">复制</button>
+              <button id="clearLogButton" type="button" data-i18n="clear">清空</button>
+            </div>
+          </div>
+          <div id="friendlyLogs" class="friendly-logs" aria-live="polite"></div>
+          <pre id="rawLog" aria-live="polite"></pre>
+        </aside>
+      </section>
+
+      <footer class="footer">
+        <span id="nextAction" data-i18n="nextConnect">下一步：连接板子并选择 COM 口。</span>
+      </footer>
+    </main>
+    <script type="module" src="./src/app.js"></script>
+  </body>
+</html>

@@ -1,0 +1,13 @@
+{
+  "enabled": false,
+  "dry_run": true,
+  "wifi_ssid": "",
+  "wifi_password": "",
+  "u1_host": "printer.local",
+  "poll_interval_ms": 1000,
+  "min_trigger_interval_ms": 1000,
+  "trigger_press_ms": 180,
+  "trigger_release_ms": 120,
+  "startup_delay_ms": 10000,
+  "web_port": 8080
+}

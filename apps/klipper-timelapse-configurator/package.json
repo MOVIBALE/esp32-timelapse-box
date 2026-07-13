@@ -1,0 +1,16 @@
+{
+  "name": "esp32-timelapse-box-configurator",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test \"src/**/*.test.mjs\"",
+    "smoke:screenshots": "node scripts/captureScreenshots.mjs",
+    "smoke:workflow": "node scripts/smokeWorkflow.mjs",
+    "release:check": "node scripts/checkReleasePackage.mjs",
+    "release:zip": "node scripts/buildReleaseZip.mjs",
+    "release:public": "node ../../scripts/build-public-release.mjs",
+    "verify:release": "node scripts/verifyRelease.mjs",
+    "serve": "python -m http.server 8776 --bind 127.0.0.1"
+  }
+}
