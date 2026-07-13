@@ -32,6 +32,7 @@ test("release package manifest includes runtime files and excludes local-only ar
     "apps/klipper-timelapse-configurator/src",
     "apps/klipper-timelapse-configurator/board-assets",
     "config/klipper/esp32_timelapse.cfg",
+    "device_files/board_main.py",
     "device_files/board_listener.py",
     "device_files/moonraker_agent.py",
     "tools/esp32_timelapse_fs.py",
@@ -143,6 +144,7 @@ test("release archive writer creates a zip with only safe relative entries", asy
     assert.ok(entries.includes("apps/klipper-timelapse-configurator/index.html"));
     assert.ok(entries.includes("apps/klipper-timelapse-configurator/README.md"));
     assert.ok(entries.includes("config/klipper/esp32_timelapse.cfg"));
+    assert.ok(entries.includes("device_files/board_main.py"));
     assert.ok(entries.includes("device_files/board_listener.py"));
     assert.ok(entries.includes("device_files/moonraker_agent.py"));
     assert.ok(entries.includes("tools/esp32_timelapse_fs.py"));

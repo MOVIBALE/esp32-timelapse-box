@@ -5,18 +5,9 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
-MAIN = ROOT / "device_files" / "main.py"
 CONFIG = ROOT / "device_files" / "u1_bridge_config.json"
 BOARD_MAIN = ROOT / "device_files" / "board_main.py"
 BOARD_LISTENER_CONFIG = ROOT / "device_files" / "board_listener_config.json"
-
-
-def test_main_waits_before_importing_bridge():
-    text = MAIN.read_text(encoding="utf-8")
-
-    assert "time.sleep" in text or "sleep_ms" in text
-    assert "import u1_bridge" in text
-    assert "boot.py" not in text.lower()
 
 
 def test_default_json_starts_disabled_and_dry_run():

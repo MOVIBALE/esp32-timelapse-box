@@ -25,6 +25,7 @@ export const RELEASE_INCLUDE_PATHS = [
   "apps/klipper-timelapse-configurator/board-assets",
   "apps/klipper-timelapse-configurator/scripts/serve-static.ps1",
   "config/klipper/esp32_timelapse.cfg",
+  "device_files/board_main.py",
   "device_files/board_listener.py",
   "device_files/board_listener_config.json",
   "device_files/moonraker_agent.py",
