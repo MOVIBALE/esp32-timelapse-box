@@ -1,5 +1,5 @@
 import { spawn } from "node:child_process";
-import { existsSync, mkdtempSync, rmSync } from "node:fs";
+import { existsSync, mkdtempSync } from "node:fs";
 import http from "node:http";
 import net from "node:net";
 import { tmpdir } from "node:os";
@@ -20,6 +20,7 @@ import {
   withCacheBust
 } from "../src/runtime/headlessChrome.js";
 import { startStaticSmokeServer } from "../src/runtime/staticSmokeServer.js";
+import { removeTemporaryDirectory } from "./smokeCleanup.mjs";
 
 const root = resolve(import.meta.dirname, "..");
 const staticServer = process.argv[2] ? null : await startStaticSmokeServer({ root });
@@ -181,7 +182,7 @@ try {
   browser.kill();
   await waitForExit(browser, 3000);
   if (staticServer) await staticServer.close();
-  rmSync(userDataDir, { recursive: true, force: true, maxRetries: 5, retryDelay: 200 });
+  await removeTemporaryDirectory(userDataDir);
 }
 
 function assertSummary(summary) {
