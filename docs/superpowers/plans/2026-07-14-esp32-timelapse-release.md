@@ -25,7 +25,7 @@
 The test scans candidate tracked files and fails on non-empty Wi-Fi JSON values,
 the known private printer address, BLE MAC literals, COM-only instructions in
 the main README, and legacy brands outside explicit compatibility/history/test
-paths. It also requires README, MIT license, security policy, and contribution
+paths. It also requires README, GPLv3 license, security policy, and contribution
 guide.
 
 - [ ] **Step 2: Verify RED**
@@ -45,7 +45,8 @@ directories, personal logs, printer snapshots, images, and release staging.
 README begins with the product name and working architecture, then links the S3
 and compatible C3 quick starts. Include the verified 135-layer result in
 anonymized form, safety warnings, support matrix, and non-affiliation notice.
-Use the standard MIT license with year 2026 and copyright holder MOVIBALE.
+Use the unmodified GNU GPL v3 license text and identify the project grant as
+`GPL-3.0-only` in README and contribution policy.
 
 - [ ] **Step 5: Verify GREEN**
 

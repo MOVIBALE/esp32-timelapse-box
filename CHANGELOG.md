@@ -16,6 +16,10 @@ Engineering prerelease.
 - Bilingual quick starts, compatibility matrix, migration guide, protocol, validation, troubleshooting, and video script.
 - Deterministic release assets and SHA-256 checksums.
 
+### Changed
+
+- Project-owned source is now licensed under `GPL-3.0-only` instead of MIT.
+
 ### Compatibility
 
 - Preserves `CYBERBRICK_SHOT`, `cyberbrick_shutter_trigger`, `cyberbrick_fs.py`, and legacy environment-variable aliases.

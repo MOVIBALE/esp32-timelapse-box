@@ -36,3 +36,9 @@ npm run verify:release
 Describe the hardware route, safety impact, compatibility impact, verification commands, and any real-hardware test that was intentionally not run. Preserve unrelated worktree changes and avoid mixing firmware, slicer, and documentation refactors unless the contract requires all three.
 
 中文贡献说明：所有会影响真实快门的改动都必须先覆盖 dry-run；提交内容不得包含家庭网络、相机地址、打印机备份或本机路径。
+
+## License
+
+By submitting a contribution, you certify that you have the right to submit it and agree that it is licensed under `GPL-3.0-only`, the same license as this project. Do not submit code whose license is incompatible with GPLv3.
+
+提交贡献即表示你确认有权提交，并同意该贡献按本项目相同的 `GPL-3.0-only` 许可证发布。不要提交与 GPLv3 不兼容的代码。

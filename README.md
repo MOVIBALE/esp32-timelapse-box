@@ -74,4 +74,4 @@ An anonymized U1 test print completed **135 / 135** expected layer frames with t
 
 This is an independent open-source project and is not affiliated with, endorsed by, or supported by any printer or camera manufacturer. Product names in compatibility documentation identify interoperability targets only.
 
-MIT licensed. Contributions should follow [CONTRIBUTING.md](CONTRIBUTING.md); security-sensitive reports should follow [SECURITY.md](SECURITY.md).
+Licensed under the GNU General Public License v3.0 only (`GPL-3.0-only`). Distributed modified versions must remain under GPLv3 and provide the corresponding source. Contributions should follow [CONTRIBUTING.md](CONTRIBUTING.md); security-sensitive reports should follow [SECURITY.md](SECURITY.md).

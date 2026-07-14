@@ -47,10 +47,16 @@ test("public repository baseline files and product contract exist", () => {
   assert.match(readme, /compatible ESP32-C3/i);
   assert.match(readme, /135\s*\/\s*135/);
   assert.match(readme, /not affiliated/i);
+  assert.match(readme, /GPL-3\.0-only/);
+  assert.doesNotMatch(readme, /MIT licensed/i);
 
   const license = read("LICENSE");
-  assert.match(license, /MIT License/);
-  assert.match(license, /Copyright \(c\) 2026 MOVIBALE/);
+  assert.match(license, /GNU GENERAL PUBLIC LICENSE/);
+  assert.match(license, /Version 3, 29 June 2007/);
+  assert.match(license, /END OF TERMS AND CONDITIONS/);
+
+  const contributing = read("CONTRIBUTING.md");
+  assert.match(contributing, /GPL-3\.0-only/);
 });
 
 test("primary product surfaces use only the canonical identity", () => {

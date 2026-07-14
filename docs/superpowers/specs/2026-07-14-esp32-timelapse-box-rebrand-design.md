@@ -192,7 +192,7 @@ Bambu reference comparisons, translation updates, and a clean diff report.
 ## 7. Repository And Release Boundary
 
 The new public GitHub repository is `MOVIBALE/esp32-timelapse-box`, public, with
-an MIT license for project-owned code. The README includes a non-affiliation and
+a `GPL-3.0-only` license for project-owned code. The README includes a non-affiliation and
 trademark notice.
 
 Included:
