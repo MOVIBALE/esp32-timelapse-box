@@ -4,8 +4,9 @@ This is the reference ESP-IDF firmware for the **ESP32 Timelapse Box**. It
 connects an ESP32-S3 to Klipper/Moonraker over Wi-Fi and to a bonded compatible
 Sony camera over BLE.
 
-The firmware starts in `dry-run`. It **不会开机自动拍**, does not scan for the
-camera on boot, and does not enter `armed` by itself. A real layer-triggered shutter requires
+The firmware starts in `dry-run`. It **不会开机自动拍** and does not enter
+`armed` by itself. If a Sony bond already exists, it safely scans and reconnects
+on boot without writing FF01. A real layer-triggered shutter requires
 all of these conditions:
 
 - Moonraker reports an active, healthy print;
@@ -15,7 +16,7 @@ all of these conditions:
 
 ## Trigger Contract
 
-The preferred Klipper macro is `ESP32_TIMELAPSE_SHOT`. Its `macro seq` value is
+The preferred Klipper macro is `ESP_TIMELAPSE_SHOT`. Its `macro seq` value is
 read through Moonraker and takes priority over layer-number detection.
 
 For compatibility with existing installations, firmware also reads the legacy
@@ -95,7 +96,8 @@ tasks are pinned separately from the Wi-Fi/event-loop workload.
 2. Provision Wi-Fi and Moonraker with `w`.
 3. Confirm repeated HTTP status requests succeed without reboots.
 4. On first use, open the camera's Bluetooth remote pairing screen, send `q`,
-   and approve the camera prompt. On later boots, send `b` to reconnect.
+   and approve the camera prompt. Later boots reconnect the bonded camera
+   automatically; `b` remains available as an explicit retry.
 5. Run a short print in dry-run and confirm macro events without photos.
 6. Send `a` only after the camera and scene are ready.
 7. Send `d` before changing the printer or camera setup.

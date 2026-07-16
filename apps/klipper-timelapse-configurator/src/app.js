@@ -148,10 +148,8 @@ async function connectBoard() {
     appendFriendly("success", tr("boardConnected"));
     const route = getHardwareRoute(hardwareRouteId);
     if (route.transport === "serial-command") {
-      await connection.write(buildDisarmCommand());
-      workflow = { ...workflow, safetyMode: "dry-run" };
       await writeS3StatusCommands();
-      appendFriendly("success", tr("s3AutoDisarmed"));
+      appendFriendly("info", tr("s3ConnectedStatusRequested"));
     }
   });
 }

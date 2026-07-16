@@ -11,6 +11,14 @@ Smooth-mode layer events and camera-confirmed shutter sequences. Reconnect,
 manual shutter, dry-run, canonical macro polling, and a real multi-material
 print were also exercised during development.
 
+On 2026-07-16, a complete 135-layer multi-material Smooth print passed the
+end-to-end user check. The toolhead parked near `X250 Y240`, the Sony route
+reported `shutter_seen=true`, and the resulting frames had the expected clear
+view. U1 native timelapse remained active at the same time. A subsequent
+firmware power cycle automatically restored the existing Sony bond to
+`connected=true, ready=true` while remaining `dry_run=true, armed=false`; no
+shutter sequence was emitted during reconnect.
+
 The 135-frame run used an existing Sony BLE bond. The integrated firmware now
 contains first-time pairing command `q`, but a fully erased board pairing from
 fresh NVS is **not yet** / **尚未** repeated on physical hardware after the final
@@ -19,15 +27,17 @@ build-tested and statically checked to contain no FF01 shutter call.
 
 ## Automated Evidence
 
-- ESP32-S3 firmware contract: 16/16 tests, including active first pairing,
+- ESP32-S3 firmware contract: 18/18 tests, including the single-USB console,
+  safe bonded-camera auto-reconnect, active first pairing,
   canonical/legacy selection, reconnect state reset, dry-run gates, and no
   pairing-time shutter write.
 - ESP-IDF/PlatformIO release build: success; approximately 1.37 MB application
   image and 40 KB static RAM usage.
-- Browser configurator: 139/139 tests.
+- Browser configurator: 144/144 tests.
 - Browser workflows: both Compatible C3 and ESP32-S3 simulations pass in real
-  headless Chrome; the S3 workflow writes `q`, `b`, `d`, `s`, and `p`, but never
-  writes manual shutter `t` or armed `a`.
+  headless Chrome. Opening the S3 route writes only status requests; explicit
+  provisioning/pairing actions exercise `q`, `b`, `d`, `s`, and `p`, but never
+  write manual shutter `t` or armed `a`.
 - Responsive rendering: 1440x900 and 390x844 screenshots are nonblank; at 390px
   the document width equals the viewport and mode labels have no internal text
   overflow.
@@ -56,7 +66,7 @@ Before calling the S3 route stable rather than prerelease:
 2. flash the release `factory.bin`;
 3. pair only through the browser's `q` action;
 4. confirm no photo is created during pairing;
-5. power-cycle both devices and reconnect with `b`;
+5. power-cycle both devices and confirm automatic bonded-camera reconnect;
+   use `b` only as a retry;
 6. pass a short dry-run print, one explicit manual `t` test, and a 10-20 layer
    armed print.
-

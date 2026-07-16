@@ -49,6 +49,10 @@
 #define TIMELAPSE_DRY_RUN_DEFAULT 1
 #endif
 
+#ifndef TIMELAPSE_AUTO_RECONNECT_BONDED
+#define TIMELAPSE_AUTO_RECONNECT_BONDED 1
+#endif
+
 #ifndef TIMELAPSE_WIFI_SSID
 #define TIMELAPSE_WIFI_SSID ""
 #endif
@@ -92,9 +96,9 @@
 #define SONY_MAX_SERVICE_CHARS 16
 #define INVALID_HANDLE 0
 #define SONY_STATUS_ACTIVE 0x20
-#define TIMELAPSE_CANONICAL_MACRO_OBJECT_NAME "gcode_macro ESP32_TIMELAPSE_SHOT"
+#define TIMELAPSE_CANONICAL_MACRO_OBJECT_NAME "gcode_macro ESP_TIMELAPSE_SHOT"
 #define TIMELAPSE_LEGACY_MACRO_OBJECT_NAME "gcode_macro CYBERBRICK_SHOT"
-#define TIMELAPSE_STATUS_PATH "/printer/objects/query?gcode_macro%20ESP32_TIMELAPSE_SHOT&gcode_macro%20CYBERBRICK_SHOT&print_stats&timelapse&virtual_sdcard&gcode_move&exception_manager&webhooks"
+#define TIMELAPSE_STATUS_PATH "/printer/objects/query?gcode_macro%20ESP_TIMELAPSE_SHOT&gcode_macro%20CYBERBRICK_SHOT&print_stats&timelapse&virtual_sdcard&gcode_move&exception_manager&webhooks"
 #define TIMELAPSE_HTTP_RESPONSE_MAX 8192
 #define TIMELAPSE_FILENAME_MAX 96
 #define TIMELAPSE_SSID_MAX 33
@@ -1445,6 +1449,12 @@ static void gattc_callback(esp_gattc_cb_event_t event, esp_gatt_if_t gattc_if, e
         if (param->reg.status == ESP_GATT_OK) {
             s_gattc_if = gattc_if;
             log_bonded_devices();
+#if TIMELAPSE_AUTO_RECONNECT_BONDED
+            if (s_have_target) {
+                ESP_LOGI(TAG, "SONY_BLUEDROID_SHUTTER_BOOT_RECONNECT requested=true dry_run=true armed=false");
+                start_bonded_sony_scan("boot");
+            }
+#endif
         }
         break;
 
@@ -2003,10 +2013,9 @@ void app_main(void)
 
     ESP_ERROR_CHECK(esp_ble_gap_register_callback(gap_callback));
     ESP_ERROR_CHECK(esp_ble_gattc_register_callback(gattc_callback));
+    configure_security();
     ESP_ERROR_CHECK(esp_ble_gattc_app_register(PROFILE_APP_ID));
     ESP_ERROR_CHECK(esp_ble_gatt_set_local_mtu(200));
-
-    configure_security();
     xTaskCreate(serial_command_task, "sony_serial_command", 4096, NULL, 5, NULL);
     xTaskCreate(timelapse_poll_task, "timelapse_poll", 8192, NULL, 4, NULL);
 

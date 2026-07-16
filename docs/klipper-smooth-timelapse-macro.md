@@ -16,11 +16,11 @@ include it from `printer.cfg`:
 After restarting Klipper, both objects should exist:
 
 ```text
-gcode_macro ESP32_TIMELAPSE_SHOT
+gcode_macro ESP_TIMELAPSE_SHOT
 gcode_macro CYBERBRICK_SHOT
 ```
 
-`ESP32_TIMELAPSE_SHOT` is canonical. `CYBERBRICK_SHOT` is a deprecated alias;
+`ESP_TIMELAPSE_SHOT` is canonical. `CYBERBRICK_SHOT` is a deprecated alias;
 both call one internal macro and expose the same sequence value. Do not install
 two separate counters.
 
@@ -37,12 +37,13 @@ One frame is requested after each completed layer, with no parking move:
 
 ```gcode
 M400
-ESP32_TIMELAPSE_SHOT
-G4 P1200
+ESP_TIMELAPSE_SHOT
+G4 P2000
 ```
 
-`M400` waits for current motion. The dwell must be at least 1000 ms; 1200 ms is
-the tested default. Traditional can leave a visible seam or small deposit on
+`M400` waits for current motion. The dwell must be at least 2000 ms. This covers
+the board's 500 ms polling interval plus the measured Sony trigger sequence.
+Traditional can leave a visible seam or small deposit on
 some materials because the toolhead pauses near the model.
 
 ### Smooth
@@ -62,8 +63,8 @@ G1 X... Y... F18000
 M400
 SAVE_GCODE_STATE NAME=ESP32_TIMELAPSE_SMOOTH
 G90
-ESP32_TIMELAPSE_SHOT
-G4 P1200
+ESP_TIMELAPSE_SHOT
+G4 P2000
 RESTORE_GCODE_STATE NAME=ESP32_TIMELAPSE_SMOOTH
 ; return XY while raised, lower Z separately, then restore extrusion
 ```
@@ -90,10 +91,9 @@ change this project's completed-layer timing contract.
 Inspect exported G-code for:
 
 - Off: zero ESP32 frame macros;
-- Traditional: exactly one `M400 -> ESP32_TIMELAPSE_SHOT -> G4` block per layer;
+- Traditional: exactly one `M400 -> ESP_TIMELAPSE_SHOT -> G4` block per layer;
 - Smooth: one physical tower, one frame per completed layer, safe raised return,
   and final purge before the final frame;
-- no duplicate `CYBERBRICK_SHOT` plus `ESP32_TIMELAPSE_SHOT` calls for one layer.
+- no duplicate `CYBERBRICK_SHOT` plus `ESP_TIMELAPSE_SHOT` calls for one layer.
 
 Then run the ESP32 in dry-run on a short real print before arming.
-

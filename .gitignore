@@ -12,6 +12,8 @@ apps/*/test-results/
 firmware/*/.pio/
 /release/
 /logs/
+/build/
+/.playwright-cli/
 /backups/
 /external/
 /notes/

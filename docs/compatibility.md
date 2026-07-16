@@ -7,7 +7,7 @@ migration period.
 
 | Surface | Canonical | Legacy compatibility |
 | --- | --- | --- |
-| Klipper macro | `ESP32_TIMELAPSE_SHOT` | `CYBERBRICK_SHOT` |
+| Klipper macro | `ESP_TIMELAPSE_SHOT` | `CYBERBRICK_SHOT` |
 | C3 WebSocket method | `esp32_timelapse_trigger` | `cyberbrick_shutter_trigger` |
 | Filesystem utility | `esp32_timelapse_fs.py` | `cyberbrick_fs.py` wrapper |
 | Wi-Fi password environment variable | `ESP32_TIMELAPSE_WIFI_PASS` | `CYBERBRICK_WIFI_PASS` |

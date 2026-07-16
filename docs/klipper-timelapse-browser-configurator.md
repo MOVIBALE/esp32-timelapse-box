@@ -1,5 +1,8 @@
 # Browser Configurator
 
+Current completion evidence: `docs/browser-configurator-completion-audit.md`.
+Release packaging contract: `docs/browser-configurator-release-package.md`.
+
 The ESP32 Timelapse Box configurator is a static bilingual application under
 `apps/klipper-timelapse-configurator/`. It uses Web Serial directly and does not
 require Electron or a resident PC listener.
@@ -21,7 +24,8 @@ The page sends the firmware's safe serial protocol:
 
 - provision network while staying dry-run;
 - **Pair Sony for first use** (`q`) with no shutter write;
-- **Connect paired Sony** (`b`) on later boots;
+- automatic bonded-Sony reconnect on later boots, with **Connect paired Sony**
+  (`b`) retained as a retry;
 - read Sony and Moonraker status (`s`, `p`);
 - lock to dry-run (`d`);
 - arm (`a`) only after the full gate passes.
@@ -63,4 +67,3 @@ The workflow smoke uses fake Web Serial in real Chrome. It exercises both the
 ESP32-S3 + Sony BLE route and the Compatible ESP32-C3 route without using real
 hardware. The S3 smoke checks that pairing sends `q` while manual shutter `t`
 and armed `a` are absent.
-

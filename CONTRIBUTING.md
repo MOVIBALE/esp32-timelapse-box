@@ -2,7 +2,7 @@
 
 ## Scope
 
-Changes should preserve both hardware routes, the canonical `ESP32_TIMELAPSE_SHOT` protocol, and documented compatibility aliases. Do not remove a legacy alias without a migration release.
+Changes should preserve both hardware routes, the canonical `ESP_TIMELAPSE_SHOT` protocol, and documented compatibility aliases. Do not remove a legacy alias without a migration release.
 
 ## Development
 

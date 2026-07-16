@@ -7,11 +7,14 @@ const firmwareMainPath =
 const firmwareConfigPath = "firmware/esp32-s3-sony-ble-timelapse/platformio.ini";
 const firmwareReadmePath = "firmware/esp32-s3-sony-ble-timelapse/README.md";
 const firmwarePartitionsPath = "firmware/esp32-s3-sony-ble-timelapse/partitions.csv";
+const firmwareDefaultsPath = "firmware/esp32-s3-sony-ble-timelapse/sdkconfig.defaults";
 
 test("ESP32-S3 firmware polls Moonraker layer changes and gates Sony shutter behind dry-run or armed mode", () => {
   const main = readFileSync(firmwareMainPath, "utf-8");
   const config = readFileSync(firmwareConfigPath, "utf-8");
   const readme = readFileSync(firmwareReadmePath, "utf-8");
+
+  assert.doesNotMatch(main, /ESP32_TIMELAPSE_SHOT/);
 
   assert.match(config, /KLIPPER_SONY_TIMELAPSE_BOX=1/);
   assert.match(config, /TIMELAPSE_DRY_RUN_DEFAULT=1/);
@@ -22,7 +25,7 @@ test("ESP32-S3 firmware polls Moonraker layer changes and gates Sony shutter beh
   assert.match(main, /esp_http_client_init\s*\(/);
   assert.match(
     main,
-    /\/printer\/objects\/query\?gcode_macro%20ESP32_TIMELAPSE_SHOT&gcode_macro%20CYBERBRICK_SHOT&print_stats&timelapse&virtual_sdcard&gcode_move&exception_manager&webhooks/
+    /\/printer\/objects\/query\?gcode_macro%20ESP_TIMELAPSE_SHOT&gcode_macro%20CYBERBRICK_SHOT&print_stats&timelapse&virtual_sdcard&gcode_move&exception_manager&webhooks/
   );
   assert.match(main, /cJSON_Parse\s*\(/);
 
@@ -94,6 +97,14 @@ test("ESP32-S3 firmware pins the verified ESP-IDF build platform", () => {
   assert.doesNotMatch(config, /^platform\s*=\s*espressif32\s*$/m);
 });
 
+test("ESP32-S3 firmware uses the single USB-C Serial/JTAG console for both logs and commands", () => {
+  const defaults = readFileSync(firmwareDefaultsPath, "utf-8");
+
+  assert.match(defaults, /CONFIG_ESP_CONSOLE_USB_SERIAL_JTAG=y/);
+  assert.match(defaults, /CONFIG_ESP_CONSOLE_SECONDARY_NONE=y/);
+  assert.doesNotMatch(defaults, /CONFIG_ESP_CONSOLE_UART_DEFAULT=y/);
+});
+
 test("ESP32-S3 timelapse firmware releases unused Classic BT memory before Wi-Fi starts", () => {
   const main = readFileSync(firmwareMainPath, "utf-8");
   const appMain = main.slice(main.indexOf("void app_main(void)"));
@@ -137,8 +148,9 @@ test("ESP32-S3 timelapse firmware uses coexistence-friendly Wi-Fi and BLE scan s
   assert.match(wifiInit, /esp_wifi_set_ps\s*\(\s*WIFI_PS_NONE\s*\)/);
 });
 
-test("ESP32-S3 timelapse firmware starts Sony BLE scanning only on an explicit serial command", () => {
+test("ESP32-S3 safely reconnects a bonded Sony on boot while retaining manual pairing and reconnect commands", () => {
   const main = readFileSync(firmwareMainPath, "utf-8");
+  const config = readFileSync(firmwareConfigPath, "utf-8");
   const gattcRegisterStart = main.indexOf("case ESP_GATTC_REG_EVT:");
   const gattcRegisterEnd = main.indexOf("case ESP_GATTC_OPEN_EVT:", gattcRegisterStart);
   const gattcRegister = main.slice(gattcRegisterStart, gattcRegisterEnd);
@@ -146,9 +158,12 @@ test("ESP32-S3 timelapse firmware starts Sony BLE scanning only on an explicit s
   const serialEnd = main.indexOf("static void open_bonded_connection", serialStart);
   const serialCommands = main.slice(serialStart, serialEnd);
 
+  assert.match(config, /TIMELAPSE_AUTO_RECONNECT_BONDED=1/);
   assert.match(main, /s_sony_scan_requested\s*=\s*false/);
   assert.match(main, /start_bonded_sony_scan\s*\(/);
-  assert.doesNotMatch(gattcRegister, /esp_ble_gap_set_scan_params\s*\(/);
+  assert.match(gattcRegister, /start_bonded_sony_scan\("boot"\)/);
+  assert.match(gattcRegister, /dry_run=true armed=false/);
+  assert.doesNotMatch(gattcRegister, /run_trigger_once_sequence|COMMAND_FULL_DOWN|s_timelapse_live_armed\s*=\s*true/);
   assert.match(serialCommands, /command\s*==\s*'b'/);
   assert.match(serialCommands, /command\s*==\s*'q'/);
   assert.match(serialCommands, /SONY_BLUEDROID_SHUTTER_SERIAL_COMMAND trigger=b accepted=true/);
@@ -219,7 +234,7 @@ test("ESP32-S3 timelapse firmware reads SnapOrca layer info from print_stats.inf
 
   assert.match(
     main,
-    /\/printer\/objects\/query\?gcode_macro%20ESP32_TIMELAPSE_SHOT&gcode_macro%20CYBERBRICK_SHOT&print_stats&timelapse&virtual_sdcard&gcode_move&exception_manager&webhooks/
+    /\/printer\/objects\/query\?gcode_macro%20ESP_TIMELAPSE_SHOT&gcode_macro%20CYBERBRICK_SHOT&print_stats&timelapse&virtual_sdcard&gcode_move&exception_manager&webhooks/
   );
   assert.match(main, /cJSON_GetObjectItemCaseSensitive\s*\(\s*print_stats\s*,\s*"info"\s*\)/);
   assert.match(main, /json_int_value\s*\(\s*print_stats_info\s*,\s*"current_layer"\s*,/);
@@ -248,7 +263,7 @@ test("ESP32-S3 timelapse firmware prefers canonical macro events and falls back 
 
   assert.match(
     main,
-    /TIMELAPSE_CANONICAL_MACRO_OBJECT_NAME\s+"gcode_macro ESP32_TIMELAPSE_SHOT"/
+    /TIMELAPSE_CANONICAL_MACRO_OBJECT_NAME\s+"gcode_macro ESP_TIMELAPSE_SHOT"/
   );
   assert.match(
     main,
@@ -256,7 +271,7 @@ test("ESP32-S3 timelapse firmware prefers canonical macro events and falls back 
   );
   assert.match(
     main,
-    /\/printer\/objects\/query\?gcode_macro%20ESP32_TIMELAPSE_SHOT&gcode_macro%20CYBERBRICK_SHOT&print_stats&timelapse&virtual_sdcard&gcode_move&exception_manager&webhooks/
+    /\/printer\/objects\/query\?gcode_macro%20ESP_TIMELAPSE_SHOT&gcode_macro%20CYBERBRICK_SHOT&print_stats&timelapse&virtual_sdcard&gcode_move&exception_manager&webhooks/
   );
   assert.match(main, /s_timelapse_baseline_macro/);
   assert.match(main, /s_timelapse_last_macro_seq/);
@@ -282,7 +297,7 @@ test("ESP32-S3 timelapse firmware prefers canonical macro events and falls back 
     "macro seq events should be evaluated before layer fallback"
   );
 
-  assert.match(readme, /ESP32_TIMELAPSE_SHOT/);
+  assert.match(readme, /ESP_TIMELAPSE_SHOT/);
   assert.match(readme, /CYBERBRICK_SHOT/);
   assert.match(readme, /兼容|compatib/i);
   assert.match(readme, /macro seq/);

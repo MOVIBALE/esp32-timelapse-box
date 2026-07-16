@@ -159,7 +159,9 @@ export function s3WorkflowSmokeSteps({
       label: "connect S3 fake serial",
       expression: `document.querySelector("#connectButton").click()`,
       waitFor: `document.querySelector("#boardStatus")?.textContent.includes("板子已连接")
-        && (window.__esp32TimelapseSerialWrites || []).includes("d\\n")`
+        && (window.__esp32TimelapseSerialWrites || []).includes("s\\n")
+        && (window.__esp32TimelapseSerialWrites || []).includes("p\\n")
+        && !(window.__esp32TimelapseSerialWrites || []).includes("d\\n")`
     },
     {
       label: "provision S3 network",
@@ -192,7 +194,7 @@ export function s3WorkflowSmokeSteps({
         + "TIMELAPSE_STATUS enabled=true dry_run=true armed=false macro_source=canonical\\n"
       )`,
       waitFor: `document.querySelector("#sonyStatus")?.textContent.includes("已连接，可拍摄")
-        && document.querySelector("#macroSource")?.textContent.includes("ESP32_TIMELAPSE_SHOT")`
+        && document.querySelector("#macroSource")?.textContent.includes("ESP_TIMELAPSE_SHOT")`
     },
     {
       label: "emit S3 dry-run macro event",

@@ -4,10 +4,10 @@
 
 `config/klipper/esp32_timelapse.cfg` exposes two public macros:
 
-- canonical: `ESP32_TIMELAPSE_SHOT`;
+- canonical: `ESP_TIMELAPSE_SHOT`;
 - compatibility: `CYBERBRICK_SHOT`.
 
-Both call `_ESP32_TIMELAPSE_EVENT` and advance **one shared sequence / 同一个共享序列**.
+Both call `_ESP_TIMELAPSE_EVENT` and advance **one shared sequence / 同一个共享序列**.
 The internal macro writes the same `seq` value back to both public objects. A
 listener therefore sees one logical frame request regardless of which alias the
 slicer called.
@@ -45,9 +45,10 @@ macro changes win. Legacy changes are accepted only when canonical has no valid
 event. Layer/Z fallback is used only when both macro sources are unavailable or
 invalid.
 
-The minimum trigger interval is 1000 ms. SnapOrca's Traditional and Smooth
-output uses `M400`, one macro call, and a default 1200 ms dwell so the board and
-camera have time to finish one frame before the next request.
+The minimum SnapOrca dwell is 2000 ms. Traditional and Smooth output uses
+`M400`, one macro call, and a default 2000 ms dwell. This covers the board's
+500 ms polling interval plus the measured Sony trigger sequence before printing
+resumes.
 
 ## Compatible C3 Backends
 
@@ -64,4 +65,3 @@ delivery cannot intentionally produce two photos.
 - `a` is never sent by automated browser smoke tests.
 - One valid completed-layer event maps to at most one shutter request.
 - Diagnostics redact credentials and device/network identifiers.
-

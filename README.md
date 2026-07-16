@@ -12,7 +12,7 @@ Download the ready-to-use assets from the GitHub release, or read the [v0.1.0 re
 
 ```mermaid
 flowchart LR
-    K["Klipper macro\nESP32_TIMELAPSE_SHOT"] --> M["Moonraker status"]
+    K["Klipper macro\nESP_TIMELAPSE_SHOT"] --> M["Moonraker status"]
     M --> E["ESP32 Timelapse Box"]
     E --> S["Sony BLE shutter"]
     E --> C["Compatible C3 shutter output"]
@@ -33,11 +33,11 @@ The compatible ESP32-C3 route preserves the earlier shutter-box protocol. See [c
    - [ESP32-S3 + Sony BLE quick start](docs/quickstart-esp32-s3-sony-ble.md)
    - [Compatible ESP32-C3 quick start](docs/quickstart-compatible-esp32-c3.md)
 3. Launch the configurator with `START-WINDOWS.cmd` or `START-MAC.command`.
-4. On first S3 use, pair Sony from the browser while the camera shows its Bluetooth remote pairing screen; later boots only reconnect the saved camera.
+4. On first S3 use, pair Sony from the browser while the camera shows its Bluetooth remote pairing screen. Later boots safely reconnect the saved camera without taking a photo.
 5. Keep the box in dry-run until a real short print produces at least one expected layer event without taking a photo.
 6. Arm only after the camera is ready and framing has been checked.
 
-中文入口：先安装 [Klipper 宏](config/klipper/esp32_timelapse.cfg)，再按所用硬件打开对应快速入门。浏览器页面默认不会触发快门；S3 每次串口连接后还会主动发送 `d` 锁定 dry-run。
+中文入口：先安装 [Klipper 宏](config/klipper/esp32_timelapse.cfg)，再按所用硬件打开对应快速入门。浏览器连接串口时只读取状态，不会改变当前 dry-run/armed；需要停拍时使用页面上的显式锁定按钮。
 
 ## Timelapse Modes
 
@@ -49,9 +49,9 @@ SnapOrca support is maintained as a separate source patch. The complete implemen
 
 ## Safety Contract
 
-- Canonical macro: `ESP32_TIMELAPSE_SHOT`.
+- Canonical macro: `ESP_TIMELAPSE_SHOT`.
 - Every macro call advances one shared event sequence.
-- S3 boots and reconnects unarmed; the browser also sends `d` immediately after serial connection.
+- S3 boots unarmed and may safely reconnect a bonded Sony without writing FF01; opening the browser only reads status and never silently changes dry-run/armed.
 - S3 first pairing uses `q`, forces dry-run, and performs no Sony FF01 shutter write.
 - Armed mode requires a verified dry-run event, exact confirmation phrase, and `ready=true` for the Sony route.
 - The diagnostic report redacts Wi-Fi credentials, SSID, private IPv4 addresses, and device addresses.

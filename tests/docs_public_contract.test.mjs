@@ -34,7 +34,7 @@ test("public guides cover both complete hardware routes", () => {
     /dry-run/,
     /ARM DRY-RUN VERIFIED/,
     /锁定为 dry-run/,
-    /ESP32_TIMELAPSE_SHOT/
+    /ESP_TIMELAPSE_SHOT/
   ]) assert.match(s3, pattern);
 
   const c3 = read(docs.c3);
@@ -48,14 +48,14 @@ test("public guides cover both complete hardware routes", () => {
     /enabled=false/,
     /dry_run=true/,
     /main\.py/,
-    /ESP32_TIMELAPSE_SHOT/
+    /ESP_TIMELAPSE_SHOT/
   ]) assert.match(c3, pattern);
 });
 
 test("compatibility and migration docs preserve every approved alias", () => {
   const compatibility = read(docs.compatibility);
   for (const token of [
-    "ESP32_TIMELAPSE_SHOT",
+    "ESP_TIMELAPSE_SHOT",
     "CYBERBRICK_SHOT",
     "esp32_timelapse_trigger",
     "cyberbrick_shutter_trigger",
@@ -81,7 +81,7 @@ test("protocol, macro, and validation docs lock the event contract", () => {
   assert.match(protocol, /canonical.*legacy/is);
 
   const macro = read(docs.macro);
-  assert.match(macro, /ESP32_TIMELAPSE_SHOT/);
+  assert.match(macro, /ESP_TIMELAPSE_SHOT/);
   assert.match(macro, /CYBERBRICK_SHOT/);
   assert.match(macro, /Traditional/);
   assert.match(macro, /Smooth/);
@@ -126,7 +126,7 @@ test("beginner configurator, troubleshooting, history, and video docs are public
   for (const token of [
     "ESP32 Timelapse Box",
     "ESP32 延时摄影盒子",
-    "ESP32_TIMELAPSE_SHOT",
+    "ESP_TIMELAPSE_SHOT",
     "supports_cyberbrick_timelapse",
     "supports_esp32_timelapse",
     "Traditional",

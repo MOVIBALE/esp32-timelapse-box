@@ -25,7 +25,7 @@ shutter test pass.
 [include esp32_timelapse.cfg]
 ```
 
-重启 Klipper 后，Moonraker 应能读取 `gcode_macro ESP32_TIMELAPSE_SHOT`。
+重启 Klipper 后，Moonraker 应能读取 `gcode_macro ESP_TIMELAPSE_SHOT`。
 
 ### 2. 刷入 ESP32-S3 固件
 
@@ -42,7 +42,8 @@ platformio run -e esp32-s3-devkitc-1
 platformio run -e esp32-s3-devkitc-1 -t upload --upload-port PORT
 ```
 
-刷写不会自动连接相机或拍照。固件启动后为 `dry-run=true, armed=false`。
+刷写不会触发拍照。固件启动后为 `dry-run=true, armed=false`；如果 NVS 中已
+有 Sony 配对记录，板子会安全地自动重连相机，但不会写 FF01。
 
 ### 3. 打开 Web Serial 配置器
 
@@ -55,7 +56,7 @@ Chrome/Edge 打开的页面中选择 `ESP32-S3 + Sony BLE`。
 4. 点击“读取盒子状态”，确认网络状态和宏源。
 
 Web Serial 只能在 `localhost` 或 HTTPS 页面工作。配置器只在用户点击
-后访问串口，连接 S3 时会立即发送 `d`，再次锁定为 dry-run。
+后访问串口；连接 S3 时仅读取状态，不会擅自改变当前 dry-run/armed。
 
 ### 4. 首次配对 Sony
 
@@ -68,8 +69,9 @@ Sony”。该按钮发送串口命令 `q`：
 - 相机出现确认提示时，在相机上同意。
 
 看到 `SONY_BLUEDROID_SHUTTER_PAIRING_DONE bonded=true` 后，配对已保存。
-以后开机不必重新配对，只需打开相机并点击“连接已配对 Sony”。等状态变为
-`ready=true` 或界面显示“已连接，可拍摄”。
+以后开机不必重新配对。打开相机后，板子会自动重连；等状态变为
+`ready=true` 或界面显示“已连接，可拍摄”。若自动重连未成功，再点击
+“连接已配对 Sony”手动重试。
 
 ### 5. Dry-run 实打验证
 
@@ -80,7 +82,7 @@ TIMELAPSE_MACRO_EVENT ... macro_source=canonical ... dry_run=true
 ```
 
 此阶段相机不应新增照片。若宏源显示 `legacy`，系统仍兼容，但建议更新
-切片和宏，使其输出 `ESP32_TIMELAPSE_SHOT`。
+切片和宏，使其输出 `ESP_TIMELAPSE_SHOT`。
 
 ### 6. 正式拍摄
 
@@ -106,7 +108,7 @@ control enabled.
 ### Install and flash
 
 Install `config/klipper/esp32_timelapse.cfg` and include it from `printer.cfg`.
-The canonical object is `gcode_macro ESP32_TIMELAPSE_SHOT`.
+The canonical object is `gcode_macro ESP_TIMELAPSE_SHOT`.
 
 Regular users flash the merged `factory.bin` from the GitHub Release at address
 `0x0`. Developers can build or upload from the firmware directory:
@@ -116,7 +118,8 @@ platformio run -e esp32-s3-devkitc-1
 platformio run -e esp32-s3-devkitc-1 -t upload --upload-port PORT
 ```
 
-The firmware starts with `dry-run=true` and `armed=false`.
+The firmware starts with `dry-run=true` and `armed=false`. If NVS already
+contains a Sony bond, it safely reconnects the camera without writing FF01.
 
 ### Configure and pair
 
@@ -126,13 +129,14 @@ camera on its Bluetooth remote pairing screen and click **Pair Sony for first
 use**. The `q` command forces dry-run, creates the BLE bond, and performs no FF01
 shutter write. Approve the prompt on the camera.
 
-After `SONY_BLUEDROID_SHUTTER_PAIRING_DONE bonded=true`, later boots only need
-**Connect paired Sony**. Wait for `ready=true`.
+After `SONY_BLUEDROID_SHUTTER_PAIRING_DONE bonded=true`, later boots reconnect
+the camera automatically. Wait for `ready=true`; use **Connect paired Sony**
+only when an explicit retry is needed. Opening the configurator itself only
+reads status and does not change dry-run or armed mode.
 
 ### Validate before arming
 
 Run a short real print in dry-run and confirm at least one canonical
-`ESP32_TIMELAPSE_SHOT` event without a photo. Only then enter
+`ESP_TIMELAPSE_SHOT` event without a photo. Only then enter
 `ARM DRY-RUN VERIFIED` and arm. Use **Lock to dry-run** before changing the
 camera or printer setup.
-

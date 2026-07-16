@@ -224,7 +224,7 @@ function assertS3Summary(summary) {
     [summary.boardStatus.includes("板子已连接"), `unexpected S3 board status: ${summary.boardStatus}`],
     [summary.safetyStatus.includes("dry-run"), `unexpected S3 safety status: ${summary.safetyStatus}`],
     [summary.sonyStatus.includes("已连接，可拍摄"), `unexpected Sony status: ${summary.sonyStatus}`],
-    [summary.macroSource.includes("ESP32_TIMELAPSE_SHOT"), `unexpected macro source: ${summary.macroSource}`],
+    [summary.macroSource.includes("ESP_TIMELAPSE_SHOT"), `unexpected macro source: ${summary.macroSource}`],
     [summary.dryRunEvents === "1", `expected one S3 dry-run event, got ${summary.dryRunEvents}`],
     [summary.lastLayer === "42", `expected S3 layer 42, got ${summary.lastLayer}`],
     [summary.currentFile === "s3-workflow-smoke.gcode", `unexpected S3 file: ${summary.currentFile}`],

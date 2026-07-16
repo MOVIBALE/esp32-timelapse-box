@@ -16,7 +16,7 @@ GPIO/HID 快门实现。
 ### 1. 安装宏并打开配置器
 
 安装 `config/klipper/esp32_timelapse.cfg`，确保 Klipper 暴露
-`ESP32_TIMELAPSE_SHOT`。运行根目录启动器，在 Chrome/Edge 中选择
+`ESP_TIMELAPSE_SHOT`。运行根目录启动器，在 Chrome/Edge 中选择
 “兼容型 ESP32-C3 快门盒”。
 
 ### 2. 第一次安全上传

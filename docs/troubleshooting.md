@@ -31,16 +31,20 @@ the bond.
 
 `macro_source=legacy` means the box is observing `CYBERBRICK_SHOT`. It remains
 compatible and should still deduplicate correctly. Install the dual-name macro
-and update the slicer to emit `ESP32_TIMELAPSE_SHOT`; keep the legacy alias until
+and update the slicer to emit `ESP_TIMELAPSE_SHOT`; keep the legacy alias until
 all profiles and devices have migrated.
 
 ## No Layer Events
 
 Confirm the print is active, Moonraker is reachable from the board's LAN, and
-Klipper exposes `gcode_macro ESP32_TIMELAPSE_SHOT`. Check the configured host,
+Klipper exposes `gcode_macro ESP_TIMELAPSE_SHOT`. Check the configured host,
 Wi-Fi status, `print_stats`, and whether polling was disabled with `e`. A browser
 Moonraker preflight can fail because of CORS even while the board can reach
 Moonraker directly.
+
+If Klipper reports `Unknown command:"ESP32"`, the slicer still emits the broken
+development name `ESP32_TIMELAPSE_SHOT`. Update all three components and verify
+the G-code contains `ESP_TIMELAPSE_SHOT` instead.
 
 ## Duplicate Photos
 
@@ -58,4 +62,3 @@ stored baseline. Dry-run intentionally logs events without photos.
 
 Click **Lock to dry-run** or send `d`. If serial is unavailable, power down the
 ESP32. Never troubleshoot camera placement while the box is armed.
-

@@ -118,6 +118,16 @@ test("S3 route uses serial commands and never enters raw REPL for setup", () => 
   assert.match(appJs, /parseS3StatusLine/);
 });
 
+test("opening the S3 serial port reads status without changing the active safety mode", () => {
+  const connectStart = appJs.indexOf("async function connectBoard");
+  const connectEnd = appJs.indexOf("async function disconnectBoard", connectStart);
+  const connectFunction = appJs.slice(connectStart, connectEnd);
+
+  assert.match(connectFunction, /writeS3StatusCommands/);
+  assert.doesNotMatch(connectFunction, /buildDisarmCommand/);
+  assert.doesNotMatch(connectFunction, /buildArmCommand/);
+});
+
 test("armed action branches between S3 command and C3 config upload", () => {
   const armStart = appJs.indexOf("async function armAfterConfirmation");
   const armEnd = appJs.indexOf("async function enterRaw", armStart);
