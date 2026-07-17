@@ -31,6 +31,22 @@ npm run verify:release
 
 `verify:release` is non-hardware: it does not open a serial port, arm a shutter, or upload firmware. It builds the ESP32-S3 image and public release assets locally.
 
+## Multi-brand Camera Reports
+
+Use the **Multi-brand camera hardware test** issue form. Report the exact camera
+model and firmware, probe version, board, pairing menu, first-pair result,
+one-shot result, and power-cycle reconnect result. A serial
+`dispatched=true` event is not evidence of a photo; the tester must confirm a
+new image on the camera.
+
+Replace all BLE addresses with `XX:XX:XX:XX:XX:XX` and remove credentials,
+serial numbers, EXIF, private network addresses, and personal paths. Do not
+promote an upstream-tested model to this project's validated list until the
+complete local validation ladder is documented.
+
+多品牌报告必须填写准确相机型号和固件版本，并分别记录首次配对、单次拍照、
+断电重连。`dispatched=true` 只表示命令已下发，不等于相机确认拍照。
+
 ## Pull Requests
 
 Describe the hardware route, safety impact, compatibility impact, verification commands, and any real-hardware test that was intentionally not run. Preserve unrelated worktree changes and avoid mixing firmware, slicer, and documentation refactors unless the contract requires all three.

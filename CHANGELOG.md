@@ -4,6 +4,19 @@ All notable public changes to ESP32 Timelapse Box are documented here.
 
 ## [Unreleased]
 
+### Added
+
+- Separate `0.1.0-alpha.1` multi-brand BLE community probe for manual Canon,
+  Fujifilm, Nikon, and Ricoh protocol validation.
+- Bilingual flashing, pairing, reconnect, privacy, recovery, compatibility,
+  and hardware-report documentation for the probe.
+
+### Safety
+
+- The probe is packaged separately from stable `v0.1.0`, never triggers at
+  boot/scan/pair/reconnect, and reports command dispatch without claiming the
+  camera created an image.
+
 ## [0.1.0] - 2026-07-17
 
 Engineering prerelease.

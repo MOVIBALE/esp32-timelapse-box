@@ -12,10 +12,38 @@ namespace {
 
 constexpr uint32_t CONNECT_TIMEOUT_MS = 30000;
 constexpr uint32_t SHUTTER_HOLD_MS = 180;
+constexpr const char *PROBE_VERSION = "0.1.0-alpha.1";
 
 std::atomic<bool> connecting {false};
 std::atomic<Furble::Camera *> activeCamera {nullptr};
 String input;
+
+String jsonEscape(const String &value) {
+  String escaped;
+  escaped.reserve(value.length() + 8);
+  const char hex[] = "0123456789ABCDEF";
+  for (size_t i = 0; i < value.length(); ++i) {
+    const uint8_t ch = static_cast<uint8_t>(value[i]);
+    switch (ch) {
+      case '"': escaped += "\\\""; break;
+      case '\\': escaped += "\\\\"; break;
+      case '\b': escaped += "\\b"; break;
+      case '\f': escaped += "\\f"; break;
+      case '\n': escaped += "\\n"; break;
+      case '\r': escaped += "\\r"; break;
+      case '\t': escaped += "\\t"; break;
+      default:
+        if (ch < 0x20) {
+          escaped += "\\u00";
+          escaped += hex[ch >> 4];
+          escaped += hex[ch & 0x0F];
+        } else {
+          escaped += static_cast<char>(ch);
+        }
+    }
+  }
+  return escaped;
+}
 
 const char *typeName(Furble::Camera::Type type) {
   using Type = Furble::Camera::Type;
@@ -31,9 +59,11 @@ const char *typeName(Furble::Camera::Type type) {
 }
 
 void printCamera(size_t index, Furble::Camera *camera) {
+  const String name = jsonEscape(String(camera->getName().c_str()));
+  const String address = jsonEscape(String(camera->getAddress().toString().c_str()));
   Serial.printf("__MB_CAMERA__{\"index\":%u,\"type\":\"%s\",\"name\":\"%s\",\"address\":\"%s\",\"connected\":%s}\r\n",
-                static_cast<unsigned>(index), typeName(camera->getType()), camera->getName().c_str(),
-                camera->getAddress().toString().c_str(), camera->isConnected() ? "true" : "false");
+                static_cast<unsigned>(index), typeName(camera->getType()), name.c_str(),
+                address.c_str(), camera->isConnected() ? "true" : "false");
 }
 
 void printList() {
@@ -50,7 +80,8 @@ void printStatus() {
                 connecting.load() ? "true" : "false", connected ? "true" : "false",
                 connected ? "true" : "false", Furble::PairingApproval::isPending() ? "true" : "false");
   if (camera != nullptr) {
-    Serial.printf(",\"type\":\"%s\",\"name\":\"%s\"", typeName(camera->getType()), camera->getName().c_str());
+    const String name = jsonEscape(String(camera->getName().c_str()));
+    Serial.printf(",\"type\":\"%s\",\"name\":\"%s\"", typeName(camera->getType()), name.c_str());
   }
   Serial.println("}");
 }
@@ -138,13 +169,13 @@ void handleCommand(String command) {
   } else if (command == "shot") {
     Furble::Camera *camera = activeCamera.load();
     if (camera == nullptr || !camera->isConnected()) {
-      Serial.println("__MB_SHOT_RESULT__{\"ok\":false,\"reason\":\"not_ready\"}");
+      Serial.println("__MB_SHOT_RESULT__{\"dispatched\":false,\"camera_confirmed\":false,\"reason\":\"not_ready\"}");
       return;
     }
     camera->shutterPress();
     delay(SHUTTER_HOLD_MS);
     camera->shutterRelease();
-    Serial.println("__MB_SHOT_RESULT__{\"ok\":true,\"manual\":true}");
+    Serial.println("__MB_SHOT_RESULT__{\"dispatched\":true,\"camera_confirmed\":false,\"manual\":true}");
   } else if (command == "disconnect") {
     Furble::Camera *camera = activeCamera.exchange(nullptr);
     if (camera != nullptr) camera->disconnect();
@@ -179,7 +210,7 @@ void setup() {
   Serial.begin(115200);
   delay(1000);
   Furble::Device::init(ESP_PWR_LVL_P3);
-  Serial.println("__MB_READY__{\"firmware\":\"multibrand-nimble-experimental\",\"hardware_validated\":false,\"auto_shutter\":false}");
+  Serial.printf("__MB_READY__{\"firmware\":\"multibrand-nimble-experimental\",\"version\":\"%s\",\"hardware_validated\":false,\"auto_shutter\":false}\r\n", PROBE_VERSION);
   handleCommand("help");
 }
 

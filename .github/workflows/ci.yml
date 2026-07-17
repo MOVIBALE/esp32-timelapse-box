@@ -42,6 +42,11 @@ jobs:
           tests/docs_public_contract.test.mjs
           tests/public_release_builder.test.mjs
           tests/repository_publication_policy.test.mjs
+          tests/build_s3_firmware.test.mjs
+          tests/camera_ble_protocol_catalog.test.mjs
+          tests/multibrand_nimble_firmware.test.mjs
+          tests/multibrand_docs.test.mjs
+          tests/multibrand_probe_release.test.mjs
 
       - name: Test compatible ESP32-C3 route
         run: >-
@@ -58,9 +63,19 @@ jobs:
       - name: Build ESP32-S3 firmware
         run: node scripts/build-s3-firmware.mjs
 
+      - name: Build experimental multi-brand BLE probe
+        run: node scripts/build-multibrand-firmware.mjs
+
       - name: Build release assets
         run: node scripts/build-public-release.mjs
 
       - name: Verify release checksums
         working-directory: release/v0.1.0
+        run: sha256sum --check SHA256SUMS.txt
+
+      - name: Build multi-brand probe Alpha assets
+        run: node scripts/build-multibrand-probe-release.mjs
+
+      - name: Verify multi-brand probe checksums
+        working-directory: release/multibrand-probe-v0.1.0-alpha.1
         run: sha256sum --check SHA256SUMS.txt

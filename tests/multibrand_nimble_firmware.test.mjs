@@ -13,6 +13,8 @@ test("experimental firmware is an independent pinned NimBLE build", () => {
   assert.match(platformio, /framework\s*=\s*arduino/);
   assert.match(platformio, /NimBLE-Arduino@2\.5\.0/);
   assert.match(platformio, /MULTIBRAND_NIMBLE_EXPERIMENTAL=1/);
+  assert.match(platformio, /ARDUINO_USB_MODE=1/);
+  assert.match(platformio, /ARDUINO_USB_CDC_ON_BOOT=1/);
   assert.match(readme, /246de0861b8907a68eec3f2496dcfc666f41816b/);
   assert.equal(existsSync(`${root}/third_party/FURBLE-LICENSE.txt`), true);
 });
@@ -28,6 +30,14 @@ test("shutter writes require the explicit manual shot command", () => {
   assert.match(main, /__MB_SHOT_RESULT__/);
   assert.doesNotMatch(main.slice(main.indexOf("void setup()")), /shutterPress\s*\(/);
   assert.match(readme, /never triggers a shutter at boot, scan, pair, or reconnect/);
+  assert.match(main, /\"dispatched\\\":true,\\\"camera_confirmed\\\":false/);
+  assert.doesNotMatch(main, /__MB_SHOT_RESULT__\{\\\"ok\\\":true/);
+});
+
+test("camera-derived strings are escaped before machine-readable JSON output", () => {
+  assert.match(main, /String jsonEscape\(/);
+  assert.match(main, /jsonEscape\(String\(camera->getName\(\)\.c_str\(\)\)\)/);
+  assert.match(main, /jsonEscape\(String\(camera->getAddress\(\)\.toString\(\)\.c_str\(\)\)\)/);
 });
 
 test("Ricoh pairing cannot silently accept numeric comparison", () => {
