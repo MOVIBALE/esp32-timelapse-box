@@ -38,6 +38,8 @@ test("release package manifest includes runtime files and excludes local-only ar
     "tools/esp32_timelapse_fs.py",
     "docs/quickstart-esp32-s3-sony-ble.md",
     "docs/quickstart-compatible-esp32-c3.md",
+    "docs/complete-system-guide.md",
+    "docs/complete-system-guide.zh-CN.md",
     "docs/release-v0.1.0.md",
     "docs/video-tutorial-script-cn.md",
     "docs/snaporca/esp32-timelapse-box-migration-prompt.md"
