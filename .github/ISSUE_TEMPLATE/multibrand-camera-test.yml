@@ -1,0 +1,88 @@
+name: Multi-brand camera hardware test / 多品牌相机实测
+description: Report pairing, shutter, and reconnect results for the experimental BLE probe.
+title: "[Camera test] BRAND MODEL"
+labels: ["hardware-test", "multibrand-ble"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        This probe is experimental. A failure report is as useful as a success. Please redact BLE addresses and private data.
+        这是实验探针。失败报告同样有价值；请先隐藏 BLE 地址和隐私信息。
+  - type: input
+    id: probe_version
+    attributes:
+      label: Probe version / 探针版本
+      placeholder: 0.1.0-alpha.1
+    validations:
+      required: true
+  - type: input
+    id: board
+    attributes:
+      label: ESP32 board / 开发板
+      placeholder: ESP32-S3-DevKitC-1 N8R8
+    validations:
+      required: true
+  - type: input
+    id: camera
+    attributes:
+      label: Camera brand and exact model / 相机品牌和准确型号
+    validations:
+      required: true
+  - type: input
+    id: camera_firmware
+    attributes:
+      label: Camera firmware version / 相机固件版本
+    validations:
+      required: true
+  - type: textarea
+    id: pairing_mode
+    attributes:
+      label: Camera pairing menu / 相机配对菜单
+      description: State the exact menu path or remote mode used.
+    validations:
+      required: true
+  - type: dropdown
+    id: scan
+    attributes:
+      label: Detected by scan? / 能否扫描到？
+      options: ["Yes / 是", "No / 否"]
+    validations:
+      required: true
+  - type: dropdown
+    id: paired
+    attributes:
+      label: Pairing and ready=true? / 配对成功且 ready=true？
+      options: ["Yes / 是", "No / 否"]
+    validations:
+      required: true
+  - type: dropdown
+    id: captured
+    attributes:
+      label: Did one `shot` create a new image? / 单次 `shot` 是否新增照片？
+      options: ["Yes / 是", "No / 否", "Not reached / 未进行"]
+    validations:
+      required: true
+  - type: dropdown
+    id: reconnect
+    attributes:
+      label: Did power-cycle reconnect and capture pass? / 断电重连拍照是否通过？
+      options: ["Yes / 是", "No / 否", "Not tested / 未测试"]
+    validations:
+      required: true
+  - type: textarea
+    id: log
+    attributes:
+      label: Redacted serial log / 已脱敏串口日志
+      render: text
+      description: Include READY, scan candidate, connect result, status, and shot result. Replace BLE addresses with XX:XX:XX:XX:XX:XX.
+    validations:
+      required: true
+  - type: checkboxes
+    id: privacy
+    attributes:
+      label: Privacy confirmation / 隐私确认
+      options:
+        - label: I removed BLE addresses, credentials, serial numbers, EXIF, and personal paths. / 我已移除 BLE 地址、凭据、序列号、EXIF 和个人路径。
+          required: true
+        - label: I understand `dispatched=true` is not camera confirmation. / 我知道 `dispatched=true` 不代表相机确认拍照。
+          required: true

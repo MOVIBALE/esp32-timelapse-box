@@ -38,12 +38,13 @@ export function resolvePlatformioPath({
 
 export function runS3FirmwareBuild({
   workspaceRoot,
+  projectRelativePath = "firmware/esp32-s3-sony-ble-timelapse",
   platform = process.platform,
   platformioPath = resolvePlatformioPath({ platform }),
   spawn = spawnSync
 } = {}) {
   const root = workspaceRoot || resolve(dirname(fileURLToPath(import.meta.url)), "..");
-  const projectDirectory = resolve(root, "firmware", "esp32-s3-sony-ble-timelapse");
+  const projectDirectory = resolve(root, ...projectRelativePath.split("/"));
   let buildDirectory = projectDirectory;
   let temporaryDirectory = null;
   let junctionPath = null;

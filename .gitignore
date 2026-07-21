@@ -10,6 +10,7 @@ apps/*/dist/
 apps/*/playwright-report/
 apps/*/test-results/
 firmware/*/.pio/
+firmware/*/build-output.log
 /release/
 /logs/
 /build/

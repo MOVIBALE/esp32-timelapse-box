@@ -40,3 +40,10 @@ Both launchers open `http://127.0.0.1:8776/`. Use Chrome or Edge because Web Ser
 正式触发短语为 `ARM DRY-RUN VERIFIED`。不要跳过 dry-run，也不要在相机未准备好时输入该短语。
 
 Full guides are in `docs/quickstart-esp32-s3-sony-ble.md` and `docs/quickstart-compatible-esp32-c3.md`.
+
+For the complete system workflow, including Klipper, Moonraker, the released
+experimental SnapOrca build, camera setup, dry-run, real printing, recovery,
+and multi-brand testing, read:
+
+- `docs/complete-system-guide.md`
+- `docs/complete-system-guide.zh-CN.md`

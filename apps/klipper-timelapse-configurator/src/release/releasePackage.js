@@ -33,6 +33,8 @@ export const RELEASE_INCLUDE_PATHS = [
   "tools/cyberbrick_fs.py",
   "docs/quickstart-esp32-s3-sony-ble.md",
   "docs/quickstart-compatible-esp32-c3.md",
+  "docs/complete-system-guide.md",
+  "docs/complete-system-guide.zh-CN.md",
   "docs/compatibility.md",
   "docs/migration-from-cyberbrick.md",
   "docs/protocol.md",

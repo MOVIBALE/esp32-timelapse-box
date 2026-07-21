@@ -15,7 +15,13 @@ const requiredFiles = [
   ".github/workflows/ci.yml",
   "scripts/build-s3-firmware.mjs",
   "scripts/build-public-release.mjs",
-  "scripts/publicRelease.mjs"
+  "scripts/publicRelease.mjs",
+  "scripts/build-multibrand-firmware.mjs",
+  "scripts/build-multibrand-probe-release.mjs",
+  "scripts/multibrandProbeRelease.mjs",
+  "docs/multibrand-community-testing.md",
+  "docs/multibrand-community-testing.zh-CN.md",
+  "docs/multibrand-community-compatibility.md"
 ];
 const primaryBrandSurfaces = [
   "README.md",

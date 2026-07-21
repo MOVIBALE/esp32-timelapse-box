@@ -1,0 +1,5 @@
+{
+  "name": "furble-camera-core-experimental",
+  "version": "3.9.0+246de086",
+  "build": { "srcDir": "src" }
+}
